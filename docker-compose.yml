@@ -10,7 +10,7 @@ services:
       - "8000:8000" # Expose NestJS app on port 8000
     environment:
       NODE_ENV: production
-      DATABASE_HOST: localhost  # Service name of the PostgreSQL container (no change)
+      DATABASE_HOST: postgres  # Service name of the PostgreSQL container (no change)
       DATABASE_PORT: 5433      # Internal port used by PostgreSQL container
       DATABASE_USER: postgres
       DATABASE_PASSWORD: 123456  # Ensure the password matches the PostgreSQL settings

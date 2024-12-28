@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { genSaltSync, hashSync } from 'bcryptjs';
-import { compareSync } from 'bcrypt';
+import { compareSync } from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';  // Thêm thư viện UUID
 @Injectable()
 export class UsersService {
