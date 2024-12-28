@@ -3,33 +3,34 @@ version: '3.8'
 services:
   app:
     build:
-      context: .
+      context: .          # Sử dụng Dockerfile từ thư mục hiện tại
       dockerfile: Dockerfile
-    container_name: ui-center-be
+    container_name: nestjs-app
     ports:
-      - "8000:8000" # Expose NestJS app on port 8000
+      - "8000:8000"       # Expose ứng dụng trên port 8000
     environment:
       NODE_ENV: production
-      DATABASE_HOST: postgres  # Service name of the PostgreSQL container (no change)
-      DATABASE_PORT: 5433      # Internal port used by PostgreSQL container
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
       DATABASE_USER: postgres
-      DATABASE_PASSWORD: 123456  # Ensure the password matches the PostgreSQL settings
+      DATABASE_PASSWORD: 123456
       DATABASE_NAME: uicenter
-      DATABASE_SYNCHRONIZE: "true"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     volumes:
-      - ./data:/var/lib/postgresql/data
-    command: sh -c "npm install && npm run start:dev"
+      - .:/usr/src/app    # Đồng bộ mã nguồn
+      - /usr/src/app/node_modules
+    command: sh -c "npm install && sleep 10 && npm run start:dev"
 
   postgres:
-    image: postgres:15-alpine  # Use PostgreSQL version 13.7
+    image: postgres:15-alpine
     container_name: postgres
     ports:
-      - "5433:5432"  # Map PostgreSQL container's port 5432 to host port 5433
+      - "5433:5432"
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 123456  # Ensure this matches the app service environment
+      POSTGRES_PASSWORD: 123456
       POSTGRES_DB: uicenter
     volumes:
       - postgres_data:/var/lib/postgresql/data
