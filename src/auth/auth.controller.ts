@@ -9,17 +9,17 @@ import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Public()
-  @UseGuards(LocalAuthGuard)
-  @UseGuards(ThrottlerGuard)
-  @ResponseMessage("User Login")
+  // @Public()
+  // @UseGuards(LocalAuthGuard)
+  // @UseGuards(ThrottlerGuard)
+  // @ResponseMessage("User Login")
   @Post('/login')
   async login(@Req() req,@Res({ passthrough: true }) response: Response) {
     console.log(req.user);
     return this.authService.login(req.user,response);
   }
-  @Public()
-  @ResponseMessage("Register a new user")
+  // @Public()
+  // @ResponseMessage("Register a new user")
   @Post('/register')
   async register(@Body() registerUserDto:RegisterUserDto) {
     return this.authService.register(registerUserDto);

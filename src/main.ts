@@ -10,8 +10,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
   //Cấu hình thiết lập interceptor
-  const reflector = app.get(Reflector);
-  app.useGlobalInterceptors(new TransformInterceptor(reflector));
+  // const reflector = app.get(Reflector);
+  // app.useGlobalInterceptors(new TransformInterceptor(reflector));
   // Các cấu hình khác
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
