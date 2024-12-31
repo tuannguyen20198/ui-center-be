@@ -9,7 +9,7 @@ import { User } from './entities/user.entity';
     TypeOrmModule.forFeature([User]), // Đăng ký entity User
   ],
   controllers: [UsersController],
-  providers: [UsersService,UsersModule],
-  exports:[UsersService]
+  providers: [UsersService],
+  exports:[UsersService,TypeOrmModule]
 })
 export class UsersModule {}

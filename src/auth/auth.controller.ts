@@ -4,7 +4,7 @@ import { Public, ResponseMessage } from 'src/decorator/customize';
 import { Request,Response } from 'express';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
-@Controller('auth')
+@Controller('/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
