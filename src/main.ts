@@ -7,14 +7,6 @@ import { ValidationPipe, VersioningType } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   const configService = app.get(ConfigService);
-<<<<<<< HEAD
-  //Cấu hình thiết lập interceptor
-  // const reflector = app.get(Reflector);
-  // app.useGlobalInterceptors(new TransformInterceptor(reflector));
-=======
-
-  const reflector = app.get(Reflector);
->>>>>>> origin/tuan-dev
   // Các cấu hình khác
   app.useStaticAssets(join(__dirname, '..', 'public'));
   app.setBaseViewsDir(join(__dirname, '..', 'views'));
@@ -32,16 +24,7 @@ async function bootstrap() {
   });
   //config versioning
   app.setGlobalPrefix('api');
-<<<<<<< HEAD
-  app.enableVersioning({
-    type: VersioningType.URI,
-    defaultVersion:['1','2']
-  });
-  console.log("configService",configService.get<string>('PORT'));
-  await app.listen(configService.get<string>('PORT'));
-=======
   await app.listen(configService.get<string>('PORT') ?? 3000);
 
->>>>>>> origin/tuan-dev
 }
 bootstrap();

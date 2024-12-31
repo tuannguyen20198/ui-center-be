@@ -3,7 +3,6 @@ import { AuthService } from './auth.service';
 import { Public, ResponseMessage } from 'src/decorator/customize';
 import { Request,Response } from 'express';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
-import { LocalAuthGuard } from './local-auth.guard';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 @Controller('auth')
 export class AuthController {

@@ -4,8 +4,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { genSaltSync, hashSync } from 'bcryptjs';
-import { compareSync } from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';  // Thêm thư viện UUID
 @Injectable()
 export class UsersService {
@@ -13,9 +11,7 @@ export class UsersService {
     @InjectRepository(User)
     private readonly userModel: Repository<User>,
   ) {}
-  getHashPassword = (password)=>{
-    return hashSync(password,genSaltSync(10));
-  }
+
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
   }
@@ -33,7 +29,6 @@ export class UsersService {
   }
   async register(user: RegisterUserDto) {
     const { email, password, phone, name } = user;
-    const hashPassword = await this.getHashPassword(password);
     const isPhoneExist = await this.userModel.findOne({ where: { phone } });
     
     if (isPhoneExist) {
@@ -46,7 +41,6 @@ export class UsersService {
       phone,
       name,
       email,
-      password: hashPassword,
     });
     // Lưu thông tin user vào database
     await this.userModel.save(newUser);
@@ -61,9 +55,7 @@ export class UsersService {
       where: { phone },
     })
   }
-  isValidPassword(plainPassword: string, hashedPassword: string): boolean {
-    return compareSync(plainPassword, hashedPassword);
-  }
+
   async updateUserToken(refreshToken: string, id: string): Promise<void> {
   console.log('Updating token for user with id:', id); // Debugging
 
