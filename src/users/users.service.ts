@@ -38,9 +38,10 @@ export class UsersService {
     // Tạo ID UUID mới nếu không có sẵn
     const newUser = await this.userModel.create({
       id: uuidv4(),  // Tạo UUID cho id
-      phone,
       name,
+      phone,
       email,
+      password
     });
     // Lưu thông tin user vào database
     await this.userModel.save(newUser);
