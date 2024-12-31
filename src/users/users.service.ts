@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';  // Thêm thư viện UUID
+import { compareSync } from 'bcrypt';
 @Injectable()
 export class UsersService {
   constructor(
@@ -26,6 +27,9 @@ export class UsersService {
 
   update(id: number, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
+  }
+  isValidPassword(password,hashPassword){
+    return compareSync(password,hashPassword);
   }
   async register(user: RegisterUserDto) {
     const { email, password, phone, name } = user;

@@ -4,21 +4,20 @@ import { Public, ResponseMessage } from 'src/decorator/customize';
 import { Request,Response } from 'express';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { LocalAuthGuard } from './local-auth.guard';
 @Controller('/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // @Public()
+  @Public()
+  @ResponseMessage("User Login")
   // @UseGuards(LocalAuthGuard)
-  // @UseGuards(ThrottlerGuard)
-  // @ResponseMessage("User Login")
   @Post('/login')
-  async login(@Req() req,@Res({ passthrough: true }) response: Response) {
-    console.log(req.user);
+  async login(@Req() req,@Res() response: Response) {
     return this.authService.login(req.user,response);
   }
-  // @Public()
-  // @ResponseMessage("Register a new user")
+  @Public()
+  @ResponseMessage("Register a new user")
   @Post('/register')
   async register(@Body() registerUserDto:RegisterUserDto) {
     return this.authService.register(registerUserDto);

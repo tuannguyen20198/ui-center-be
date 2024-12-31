@@ -7,6 +7,7 @@ import { AuthService } from './auth/auth.service';
 import { UsersModule } from './users/users.module';
 import { AppService } from './app.service';
 import { AuthController } from './auth/auth.controller';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { AuthController } from './auth/auth.controller';
     ConfigModule.forRoot({ 
       isGlobal: true 
     }),
-    UsersModule
+    UsersModule,
+    AuthModule,
   ],
   controllers:[AuthController],
   providers: [AuthService]
