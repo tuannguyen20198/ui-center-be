@@ -15,13 +15,15 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: IUser) {
-    // Attach user data to request for further use
-    console.log('JWT Payload:', payload);
+    const { id, name, email, password } = payload;
+    // cần gán thêm permissions vào req.user
+    console.log(payload)
+    //req.user
     return {
-      id: payload.id,
-      name: payload.name,
-      email: payload.email,
-      phone: payload.phone,
+        id,
+        name,
+        email,
+        password,
     };
   }
 }

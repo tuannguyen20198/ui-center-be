@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';  // Thêm thư viện UUID
-import { compareSync } from 'bcrypt';
+import { genSaltSync, hashSync, compareSync } from 'bcryptjs';
 @Injectable()
 export class UsersService {
   constructor(
@@ -31,8 +31,12 @@ export class UsersService {
   isValidPassword(password,hashPassword){
     return compareSync(password,hashPassword);
   }
+  getHashPassword = (password)=>{
+    return hashSync(password,genSaltSync(10));
+  }
   async register(user: RegisterUserDto) {
     const { email, password, phone, name } = user;
+    const hashPassword = await this.getHashPassword(password);
     const isPhoneExist = await this.userModel.findOne({ where: { phone } });
     
     if (isPhoneExist) {
@@ -45,7 +49,7 @@ export class UsersService {
       name,
       phone,
       email,
-      password
+      password:hashPassword
     });
     // Lưu thông tin user vào database
     await this.userModel.save(newUser);
@@ -55,11 +59,20 @@ export class UsersService {
       phone: newUser.phone,
     };
   }
-  findOneByPhone(phone: string) {
+  findOneByPhone(phone: string): Promise<User | null> {
     return this.userModel.findOne({
       where: { phone },
-    })
+    }).then(user => {
+      if (!user) {
+        console.log(`No user found with phone: ${phone}`);
+      }
+      return user;
+    }).catch(error => {
+      console.error('Database error:', error);
+      throw new Error('Database query failed');
+    });
   }
+  
 
   async updateUserToken(refreshToken: string, id: string): Promise<void> {
   console.log('Updating token for user with id:', id); // Debugging
