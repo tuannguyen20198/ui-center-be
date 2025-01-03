@@ -2,9 +2,9 @@ import { Body, Controller, Post, Req, Res, UnauthorizedException, UseGuards } fr
 import { AuthService } from './auth.service';
 import { Public, ResponseMessage } from 'src/decorator/customize';
 import { RegisterUserDto } from 'src/users/dto/create-user.dto';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { Response } from 'express';
 import { JwtService } from '@nestjs/jwt';
+import { LocalAuthGuard } from './local-auth.guard';
 @Controller('/auth')
 export class AuthController {
   constructor(
@@ -12,10 +12,31 @@ export class AuthController {
     private readonly authService: AuthService
   ) {}
 
-  @Public()
   @Post('/login')
-  async login(@Req() req, @Res() response: Response) {
-    console.log(req.users)
+  @ResponseMessage("Login succesfull")
+  @UseGuards(LocalAuthGuard)  // Bảo vệ route với LocalAuthGuard
+  async login(@Req() req,@Res() response: Response) {
+    try {
+      const phone = req.body.phone;
+      const password = req.body.password;
+  
+      // Logic để xác thực và tạo JWT
+      const user = await this.authService.validateUser(phone, password);
+  
+      if (!user) {
+        return response.status(401).json({ message: 'Invalid phone or password' });
+      }
+  
+      const token = await this.authService.generateJwt(user);
+      return response.status(200).json({
+        message: 'Login successful',
+        user,
+        token,
+      });
+    } catch (error) {
+      console.error('Error during login:', error);
+      return response.status(500).json({ message: 'Internal server error' });
+    }
   }
 
   @Public()

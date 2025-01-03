@@ -16,12 +16,33 @@ export class AuthService {
     ) {}
 
     async validateUser(phone: string, password: string): Promise<any> {
-        const user = await this.usersService.findOneByPhone(phone);
-        if (user && await bcrypt.compare(password, user.password)) {
-            const { password, ...result } = user;
-            return result;
+        console.log('Phone:', phone); // Kiểm tra phone
+        const user = await this.usersService.findByPhone(phone);
+      
+        if (!user) {
+          console.log('User not found');
+          return null;
         }
-        return null;
+      
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+          console.log('Invalid password');
+          return null;
+        }
+      
+        return user;
+      }
+    // Tạo JWT token
+    async generateJwt(user: any) {
+        // Bạn có thể lưu các thông tin bạn cần vào payload của token
+        const payload = { phone: user.phone, userId: user.id };
+
+        // Tạo token với thời gian sống là 1 giờ
+        const token = this.jwtService.sign(payload, {
+            secret: 'yourSecretKey', // Thay thế 'yourSecretKey' bằng khóa bí mật của bạn
+            expiresIn: '1h', // Thời gian sống của token, ví dụ 1 giờ
+        });
+        return token;
     }
     createRefreshToken = (payload:any) => {
     const refresh_token =  this.jwtService.sign(payload,{
@@ -30,26 +51,33 @@ export class AuthService {
     });
     return refresh_token;
     }
-    async login(phone: string, password: string) {
-        // Gọi đến validateUser để kiểm tra thông tin đăng nhập
-        const user = await this.validateUser(phone, password);
-
-        if (!user) {
-            // Nếu không tìm thấy người dùng hoặc mật khẩu sai, ném ra UnauthorizedException
-            throw new UnauthorizedException('Invalid credentials');
-        }
-
-        // Nếu người dùng tồn tại, tiếp tục xử lý
-        const { id, password: pass } = user; // Destructure thông tin người dùng
-
-        // Tiếp tục xử lý (ví dụ, tạo JWT token)
-        const token = this.jwtService.sign({ id });
-
-        return {
-            message: 'Login successful',
-            token,
+    async login(user: IUser,response:Response) {
+        const {id,name,email} = user;
+        const payload = { 
+          sub:"token login",
+          iss:"from server",
+          id,
+          name,
+          email,
         };
-    }
+        const refresh_token = this.createRefreshToken(payload)
+    
+        //Update user with refresh token 
+        await this.usersService.updateUserToken(refresh_token,id);
+        //set refresh_token as cookies
+        await response.cookie('refresh_token',refresh_token,{
+          httpOnly:true,
+          maxAge:ms(this.configService.get<string>("JWT_REFRESH_EXPIRE"))
+        });
+        return {
+          access_token: this.jwtService.sign(payload),
+          user:{
+            id,
+            name,
+            email,
+          }
+        };
+      }
     
     async register(user:RegisterUserDto){
     const newUser = await this.usersService.register(user);

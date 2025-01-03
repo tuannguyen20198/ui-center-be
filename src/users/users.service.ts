@@ -59,18 +59,8 @@ export class UsersService {
       phone: newUser.phone,
     };
   }
-  findOneByPhone(phone: string): Promise<User | null> {
-    return this.userModel.findOne({
-      where: { phone },
-    }).then(user => {
-      if (!user) {
-        console.log(`No user found with phone: ${phone}`);
-      }
-      return user;
-    }).catch(error => {
-      console.error('Database error:', error);
-      throw new Error('Database query failed');
-    });
+  async findByPhone(phone: string): Promise<any> {
+    return this.userModel.findOne({ where: { phone } });
   }
   findOneById(id:string): Promise<User | null> {
     return this.userModel.findOne({
@@ -87,14 +77,10 @@ export class UsersService {
   }
 
   async updateUserToken(refreshToken: string, id: string): Promise<void> {
-  console.log('Updating token for user with id:', id); // Debugging
-
   const user = await this.userModel.findOne({ where: { id } });
-
   if (user) {
     user.refreshToken = refreshToken;
     await this.userModel.save(user);
-    console.log('User token updated successfully');
   } else {
     throw new Error('User not found');
   }
