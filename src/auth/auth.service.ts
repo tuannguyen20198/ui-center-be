@@ -16,17 +16,14 @@ export class AuthService {
     ) {}
 
     async validateUser(phone: string, password: string): Promise<any> {
-        console.log('Phone:', phone); // Kiểm tra phone
         const user = await this.usersService.findByPhone(phone);
       
         if (!user) {
-          console.log('User not found');
           return null;
         }
       
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-          console.log('Invalid password');
           return null;
         }
       

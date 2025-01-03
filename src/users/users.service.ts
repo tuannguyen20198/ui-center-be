@@ -71,8 +71,7 @@ export class UsersService {
       }
       return user;
     }).catch(error => {
-      console.error('Database error:', error);
-      throw new Error('Database query failed');
+      throw new Error(error);
     });
   }
 
