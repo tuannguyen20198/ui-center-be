@@ -44,38 +44,39 @@ export class AuthService {
         });
         return token;
     }
-    createRefreshToken = (payload:any) => {
-    const refresh_token =  this.jwtService.sign(payload,{
-        secret:this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET"),
-        expiresIn:ms(this.configService.get<string>("JWT_REFRESH_EXPIRE"))  / 1000
-    });
+    createRefreshToken = (user:any) => {
+        const payload = { phone: user.phone, userId: user.id };
+        const refresh_token =  this.jwtService.sign(payload,{
+            secret:this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET"),
+            expiresIn:ms(this.configService.get<string>("JWT_REFRESH_EXPIRE"))  / 1000
+        });
     return refresh_token;
     }
     async login(user: IUser,response:Response) {
         const {id,name,email} = user;
         const payload = { 
-          sub:"token login",
-          iss:"from server",
-          id,
-          name,
-          email,
+            sub:"token login",
+            iss:"from server",
+            id,
+            name,
+            email,
         };
         const refresh_token = this.createRefreshToken(payload)
-    
+
         //Update user with refresh token 
         await this.usersService.updateUserToken(refresh_token,id);
         //set refresh_token as cookies
         await response.cookie('refresh_token',refresh_token,{
-          httpOnly:true,
-          maxAge:ms(this.configService.get<string>("JWT_REFRESH_EXPIRE"))
+            httpOnly:true,
+            maxAge:ms(this.configService.get<string>("JWT_REFRESH_EXPIRE"))
         });
         return {
-          access_token: this.jwtService.sign(payload),
-          user:{
-            id,
-            name,
-            email,
-          }
+        access_token: this.jwtService.sign(payload),
+            user:{
+                id,
+                name,
+                email,
+            }
         };
       }
     

@@ -15,28 +15,8 @@ export class AuthController {
   @Post('/login')
   @ResponseMessage("Login succesfull")
   @UseGuards(LocalAuthGuard)  // Bảo vệ route với LocalAuthGuard
-  async login(@Req() req,@Res() response: Response) {
-    try {
-      const phone = req.body.phone;
-      const password = req.body.password;
-  
-      // Logic để xác thực và tạo JWT
-      const user = await this.authService.validateUser(phone, password);
-  
-      if (!user) {
-        return response.status(401).json({ message: 'Invalid phone or password' });
-      }
-  
-      const token = await this.authService.generateJwt(user);
-      return response.status(200).json({
-        message: 'Login successful',
-        user,
-        token,
-      });
-    } catch (error) {
-      console.error('Error during login:', error);
-      return response.status(500).json({ message: 'Internal server error' });
-    }
+  async login(@Req() req,@Res({ passthrough: true }) response: Response) {
+    return this.authService.login(req.user,response);
   }
 
   @Public()
