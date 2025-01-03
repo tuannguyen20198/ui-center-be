@@ -72,7 +72,19 @@ export class UsersService {
       throw new Error('Database query failed');
     });
   }
-  
+  findOneById(id:string): Promise<User | null> {
+    return this.userModel.findOne({
+      where: { id },
+    }).then(user => {
+      if (!user) {
+        console.log(`No user found with id: ${id}`);
+      }
+      return user;
+    }).catch(error => {
+      console.error('Database error:', error);
+      throw new Error('Database query failed');
+    });
+  }
 
   async updateUserToken(refreshToken: string, id: string): Promise<void> {
   console.log('Updating token for user with id:', id); // Debugging

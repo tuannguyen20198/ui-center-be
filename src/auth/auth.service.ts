@@ -15,14 +15,14 @@ export class AuthService {
         private configService: ConfigService,
     ) {}
 
-    async validateUser(phone: string, password: string): Promise<IUser | null> {
-        const user = await this.usersService.findOneByPhone(phone); // Tìm user bằng phone
-        console.log('User found:', user); // Kiểm tra user trả về
-        if (user && bcrypt.compareSync(password, user.password)) { // Kiểm tra mật khẩu
-          return user; // Trả về user nếu hợp lệ
+    async validateUser(phone: string, password: string): Promise<any> {
+        const user = await this.usersService.findOneByPhone(phone);
+        if (user && await bcrypt.compare(password, user.password)) {
+            const { password, ...result } = user;
+            return result;
         }
-        return null; // Trả về null nếu không hợp lệ
-      }
+        return null;
+    }
     createRefreshToken = (payload:any) => {
     const refresh_token =  this.jwtService.sign(payload,{
         secret:this.configService.get<string>("JWT_REFRESH_TOKEN_SECRET"),
